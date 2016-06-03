@@ -1,0 +1,7 @@
+
+#RocketMq Client Configuration
+# Please refer RocketClientConfig for every setting's details
+rocketmq.topic: ""
+rocketmq.nameserver: ""
+rocketmq.group: ""
+message.tag: ""
