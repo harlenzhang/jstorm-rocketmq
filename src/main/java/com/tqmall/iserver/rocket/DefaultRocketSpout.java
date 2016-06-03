@@ -4,7 +4,9 @@ import backtype.storm.spout.SpoutOutputCollector;
 import backtype.storm.task.TopologyContext;
 import backtype.storm.topology.IRichSpout;
 import backtype.storm.topology.OutputFieldsDeclarer;
+import backtype.storm.tuple.Fields;
 import backtype.storm.tuple.Values;
+import com.alibaba.fastjson.JSON;
 import com.alibaba.rocketmq.client.consumer.DefaultMQPushConsumer;
 import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyContext;
 import com.alibaba.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
@@ -14,9 +16,9 @@ import com.alibaba.rocketmq.common.message.MessageExt;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.charset.Charset;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.LinkedBlockingDeque;
 
 /**
  * Created by harlenzhang on 16/6/3.
@@ -28,12 +30,12 @@ public class DefaultRocketSpout implements IRichSpout, MessageListenerConcurrent
     private SpoutOutputCollector collector;
     private RocketClientConfig rocketClientConfig;
     private transient DefaultMQPushConsumer consumer;
-    private transient LinkedBlockingDeque<MessageTuple> sendingQueue;
 
-    private static Logger log = LoggerFactory.getLogger(DefaultRocketSpout.class);
+    private static Logger log = LoggerFactory.getLogger("spout.log");
 
 
     public void declareOutputFields(OutputFieldsDeclarer declarer) {
+        declarer.declare(new Fields("MessageTuple"));
 
     }
 
@@ -45,7 +47,6 @@ public class DefaultRocketSpout implements IRichSpout, MessageListenerConcurrent
         this.conf = conf;
         this.collector = collector;
         this.id = context.getThisComponentId() + ":" + context.getThisTaskId();
-        this.sendingQueue = new LinkedBlockingDeque<MessageTuple>();
 
         rocketClientConfig = RocketClientConfig.mkInstance(conf);
 
@@ -97,7 +98,7 @@ public class DefaultRocketSpout implements IRichSpout, MessageListenerConcurrent
     }
 
     public void nextTuple() {
-
+        //do nothing since the tuple was emitted in consumeMessage
     }
 
     public void ack(Object msgId) {
@@ -108,16 +109,14 @@ public class DefaultRocketSpout implements IRichSpout, MessageListenerConcurrent
 
     }
 
-    /**this method don't guarantee any ack mechanism*/
-    public void sendMsgTuple(MessageTuple messageTuple){
-        collector.emit(new Values(messageTuple));
-    }
-
     //// FIXME: 16/6/3 harlenzhang need to consider the cosuming of message
     public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> msgs, ConsumeConcurrentlyContext context) {
-        MessageTuple messageTuple = new MessageTuple(msgs, context.getMessageQueue());
-        return null;
-
-
+        for (MessageExt msg : msgs){
+            System.out.println(msg);
+            String body = new String(msg.getBody(), Charset.forName("UTF-8"));
+            log.info("emit data from spout: {}", body);
+            collector.emit(new Values(body));
+        }
+        return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
     }
 }

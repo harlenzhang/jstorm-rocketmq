@@ -34,7 +34,7 @@ public class ConsumerFactory {
 
         log.info("start to init consumer client, configuration: ", JSON.toJSONString(config));
 
-
+        consumer = new DefaultMQPushConsumer(consumerGroup);
         String nameServer = config.getNameServer();
         consumer.setNamesrvAddr(nameServer);
 
