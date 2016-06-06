@@ -37,9 +37,9 @@ public class RocketMqTopology {
         builder.setSpout("RocketSpout", new DefaultRocketSpout());
         builder.setBolt("TestBolt", new RocketBolt()).shuffleGrouping("RocketSpout");
 
-//        LocalCluster cluster = new LocalCluster();
-//        cluster.submitTopology("testLocal", conf, builder.createTopology());
-        StormSubmitter.submitTopology("test", conf, builder.createTopology());
+        LocalCluster cluster = new LocalCluster();
+        cluster.submitTopology("testLocal", conf, builder.createTopology());
+//        StormSubmitter.submitTopology("test", conf, builder.createTopology());
 
     }
 
@@ -75,6 +75,7 @@ public class RocketMqTopology {
         }
 
         return;
+
     }
 
 
