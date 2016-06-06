@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.builder.ToStringBuilder;
 
+import java.io.File;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -11,6 +12,9 @@ import java.util.Map;
  * Created by harlenzhang on 16/6/3.
  */
 public class RocketClientConfig implements Serializable{
+
+    public static final String configPath = System.getProperty("user.dir") + File.separator + "src" + File.separator + "main" + File.separator
+    + "resources" + File.separator + "rocketspout.yaml";
 
     public static final String TOPIC = "rocketmq.topic";
 

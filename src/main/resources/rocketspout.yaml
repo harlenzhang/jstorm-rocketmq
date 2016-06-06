@@ -2,6 +2,6 @@
 #RocketMq Client Configuration
 # Please refer RocketClientConfig for every setting's details
 rocketmq.topic: "TopicTest"
-rocketmq.nameserver: ""
+rocketmq.nameserver: "120.55.66.194:9876"
 rocketmq.group: "STALL_GROUP"
 message.tag: ""

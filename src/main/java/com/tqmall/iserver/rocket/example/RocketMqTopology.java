@@ -6,6 +6,8 @@ import backtype.storm.generated.AlreadyAliveException;
 import backtype.storm.generated.InvalidTopologyException;
 import backtype.storm.topology.TopologyBuilder;
 import com.tqmall.iserver.rocket.DefaultRocketSpout;
+import com.tqmall.iserver.rocket.RocketClientConfig;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.yaml.snakeyaml.Yaml;
@@ -23,17 +25,21 @@ import java.util.Properties;
 public class RocketMqTopology {
     private static Logger log = LoggerFactory.getLogger(RocketMqTopology.class);
 
+    private static Map conf = new HashMap<Object, Object>();
+
     public static void main(String[] args) throws AlreadyAliveException, InvalidTopologyException {
-        //LoadConf(args[0]);
-        LoadConf("/Users/harlenzhang/Documents/projects/jstorm-rocketmq/src/main/resources/rocketspout.yaml");
+        String path = RocketClientConfig.configPath;
+        if (StringUtils.isBlank(args[0]))
+            path = args[0];
+        LoadConf(path);
         TopologyBuilder builder =  new TopologyBuilder();
 
         builder.setSpout("RocketSpout", new DefaultRocketSpout());
         builder.setBolt("TestBolt", new RocketBolt()).shuffleGrouping("RocketSpout");
 
-        LocalCluster cluster = new LocalCluster();
-        cluster.submitTopology("testLocal", conf, builder.createTopology());
-        //StormSubmitter.submitTopology("test", conf, builder.createTopology());
+//        LocalCluster cluster = new LocalCluster();
+//        cluster.submitTopology("testLocal", conf, builder.createTopology());
+        StormSubmitter.submitTopology("test", conf, builder.createTopology());
 
     }
 
@@ -72,7 +78,6 @@ public class RocketMqTopology {
     }
 
 
-    private static Map conf = new HashMap<Object, Object>();
 
     private static void LoadProperty(String prop) {
         Properties properties = new Properties();
