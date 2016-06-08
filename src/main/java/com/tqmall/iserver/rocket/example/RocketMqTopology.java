@@ -29,7 +29,7 @@ public class RocketMqTopology {
 
     public static void main(String[] args) throws AlreadyAliveException, InvalidTopologyException {
         String path = RocketClientConfig.configPath;
-        if (StringUtils.isBlank(args[0]))
+        if (!StringUtils.isBlank(args[0]))
             path = args[0];
         LoadConf(path);
         TopologyBuilder builder =  new TopologyBuilder();
